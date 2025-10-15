@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.diceroller.ui.theme.DiceRollerTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,6 +49,7 @@ fun DiceRollerApp() {
 fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
     var result1 by remember { mutableStateOf(1) }
     var result2 by remember { mutableStateOf(0) } // 0 significa que no se ha lanzado
+    var totalScore by remember { mutableStateOf(0) }
 
     val imageResource1 = when (result1) {
         1 -> R.drawable.dice_1
@@ -83,11 +85,20 @@ fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
             }
         }
 
+        if (totalScore > 0) {
+            Text(
+                text = "Puntuación: $totalScore",
+                fontSize = 24.sp
+            )
+        }
+
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
             result1 = (1..6).random()
             result2 = 0
+            totalScore = result1
         }) {
             Text("Lanzar un dado")
         }
@@ -97,6 +108,7 @@ fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
         Button(onClick = {
             result1 = (1..6).random()
             result2 = (1..6).random()
+            totalScore = result1 + result2
         }) {
             Text("Lanzar los dos dados")
         }
