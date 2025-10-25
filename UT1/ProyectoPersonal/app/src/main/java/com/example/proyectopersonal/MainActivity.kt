@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -18,23 +18,25 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme(
-                colorScheme = lightColorScheme(),
-            ) {
+            var isDarkMode by remember { mutableStateOf(false) }
+            val colorScheme = if (isDarkMode) darkColorScheme() else lightColorScheme()
+            MaterialTheme(colorScheme = colorScheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GreetingSection()
+                    GreetingSection(
+                        isDarkMode = isDarkMode,
+                        onToggleTheme = { isDarkMode = !isDarkMode }
+                    )
                 }
             }
-
         }
     }
 }
 
 @Composable
-fun GreetingSection() {
+fun GreetingSection(isDarkMode: Boolean, onToggleTheme: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,8 +52,16 @@ fun GreetingSection() {
                 .padding(8.dp),
             contentScale = ContentScale.Crop
         )
-        Text(text = "Hola, soy Álvaro", fontSize = 28.sp)
+
+        val greetingText = if (isDarkMode) "Bona nit" else "Bon dia"
+        Text(text = greetingText, fontSize = 28.sp)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Bienvenido a mi proyecto personal", fontSize = 18.sp)
+        Text(text = "Proyecto personal de Álvaro", fontSize = 18.sp)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = onToggleTheme) {
+            Text(if (isDarkMode) "Cambiar a modo día" else "Cambiar a modo noche")
+        }
     }
 }
