@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import kotlin.random.Random
+import android.text.Html
+import android.os.Build
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,7 +14,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvListaAlumnos: TextView
     private lateinit var btnSiguiente: Button
 
-    private var alumnosLista = mutableListOf<String>()
+    private var alumnosPorSalir = mutableListOf<String>()
+    private var alumnosQueYaSalieron = mutableListOf<String>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         tvListaAlumnos = findViewById(R.id.tvListaAlumnos)
         btnSiguiente = findViewById(R.id.btnSiguiente)
 
-        alumnosLista.addAll(listOf("Álvaro", "Carlos", "Santiago", "Helena"))
+        alumnosPorSalir.addAll(listOf("Álvaro", "Carlos", "Santiago", "Helena"))
 
         actualizarListaVisual()
 
@@ -32,19 +36,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun seleccionarSiguiente() {
-        val indexAleatorio = Random.nextInt(alumnosLista.size)
-        val alumnoElegido = alumnosLista[indexAleatorio]
+        if (alumnosPorSalir.isEmpty()) {
+            reiniciarSorteo()
+            return
+        }
+
+        val indexAleatorio = Random.nextInt(alumnosPorSalir.size)
+
+        val alumnoElegido = alumnosPorSalir.removeAt(indexAleatorio)
+        alumnosQueYaSalieron.add(alumnoElegido)
+
         tvAlumnoSeleccionado.text = alumnoElegido
+
+        actualizarListaVisual()
     }
 
     private fun actualizarListaVisual() {
         val textoBuilder = StringBuilder()
         textoBuilder.append("Alumnos:\n\n")
 
-        alumnosLista.forEach { alumno ->
-            textoBuilder.append("$alumno\n")
+        alumnosQueYaSalieron.forEach { alumno ->
+            val textoAlumno = "[X] $alumno\n"
+            textoBuilder.append(textoAlumno)
+        }
+
+        alumnosPorSalir.forEach { alumno ->
+            textoBuilder.append("[ ] $alumno\n")
         }
 
         tvListaAlumnos.text = textoBuilder.toString()
+    }
+
+    private fun reiniciarSorteo() {
+        alumnosPorSalir.addAll(alumnosQueYaSalieron)
+        alumnosQueYaSalieron.clear()
+        actualizarListaVisual()
+        tvAlumnoSeleccionado.text = "Lista reiniciada"
     }
 }
